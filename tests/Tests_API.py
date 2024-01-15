@@ -28,7 +28,7 @@ class TestClass:
             response = get_request(base_url, get_users_request, page)
             assert response.status_code == 200
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
@@ -39,7 +39,7 @@ class TestClass:
             response = get_request(base_url, get_users_request)
             assert response.status_code == 200
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
@@ -55,7 +55,7 @@ class TestClass:
             response = get_request(base_url, f"{get_single_user_request}/{user_number}")
             assert response.status_code == 200
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
@@ -66,7 +66,7 @@ class TestClass:
             response = get_request(base_url, get_list_resources)
             assert response.status_code == 200
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
@@ -82,7 +82,7 @@ class TestClass:
             response = get_request(base_url, f"{get_single_resource}/{resource_number}")
             assert response.status_code == 200
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
@@ -96,7 +96,7 @@ class TestClass:
             response = requests.post(base_url + post_create, json=body)
             assert response.status_code == 201
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
@@ -113,7 +113,7 @@ class TestClass:
             update_response = requests.put(f"{base_url}{post_create}/{user_id}")
             assert update_response.status_code == 200
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
@@ -130,7 +130,7 @@ class TestClass:
             update_response = requests.patch(f"{base_url}{post_create}/{user_id}")
             assert update_response.status_code == 200
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
@@ -146,12 +146,12 @@ class TestClass:
             delete_response = requests.delete(f"{base_url}{post_create}/{user_id}")
             assert delete_response.status_code == 204
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
     def test_register_status_code(self):
-        """Tests the status code of the get create API"""
+        """Tests the status code of the post  register API"""
         server_status = base_available(base_url)
         if server_status == 200:
             num_users = get_request(base_url, get_users_request)
@@ -164,7 +164,25 @@ class TestClass:
             register_response = requests.post(base_url + post_register, json=body)
             assert register_response.status_code == 200
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
+        return
+
+    @pytest.mark.unit
+    def test_login_successful_status_code(self):
+        """Tests the status code of the post  login API"""
+        server_status = base_available(base_url)
+        if server_status == 200:
+            num_users = get_request(base_url, get_users_request)
+            total_users = int(num_users.json()["total"])
+            user_number = random.choice([x for x in range(1, total_users + 1)])
+            response = get_request(base_url, f"{get_single_user_request}/{user_number}")
+            email_address = response.json()["data"]["email"]
+            register_password = create_password()
+            body = make_dict_objects(email=email_address, password=register_password)
+            register_response = requests.post(base_url + post_login, json=body)
+            assert register_response.status_code == 200
+        else:
+            assert 200 == server_status, "exit test, server not available!"
         return
 
     @pytest.mark.unit
@@ -179,7 +197,7 @@ class TestClass:
             invalid_response = get_request(base_url, get_single_user_request + f"/{str(invalid_user)}")
             assert invalid_response.status_code == 404
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     @pytest.mark.unit
@@ -195,7 +213,7 @@ class TestClass:
             invalid_response = get_request(base_url, get_single_resource + f"/{str(invalid_resource)}")
             assert invalid_response.status_code == 404
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
             return
 
     def test_register_unsuccessful_status_code(self):
@@ -211,7 +229,25 @@ class TestClass:
             register_response = requests.post(base_url + post_register, json=body)
             assert register_response.status_code == 400
         else:
-            assert server_status == 404, "exit test, server not available!"
+            assert 200 == server_status, "exit test, server not available!"
+        return
+
+    @pytest.mark.unit
+    def test_login_unsuccessful_status_code(self):
+        """Tests the status code of the post  login API"""
+        server_status = base_available(base_url)
+        if server_status == 200:
+            num_users = get_request(base_url, get_users_request)
+            total_users = int(num_users.json()["total"])
+            user_number = random.choice([x for x in range(1, total_users + 1)])
+            response = get_request(base_url, f"{get_single_user_request}/{user_number}")
+            email_address = response.json()["data"]["email"]
+            register_password = create_password()
+            body = make_dict_objects(email=email_address)
+            register_response = requests.post(base_url + post_login, json=body)
+            assert register_response.status_code == 400
+        else:
+            assert 200 == server_status, "exit test, server not available!"
         return
 
 
