@@ -1,10 +1,9 @@
 import datetime
 import random
-
 import pytest
 import requests
 
-"""we can move all the variables to a common file for ease of modification when needed"""
+"""we can move all the variables to a common file (csv or database) for ease of modification when needed"""
 
 base_url = 'https://reqres.in/'
 get_users_request = "api/users"
@@ -254,8 +253,7 @@ class TestClass:
         return
 
 
-"""Some functions can be moveto a file and imported to be common function file to be called by test files - possible 
-way to utilize fixtures"""
+"""Some functions can be moveto a file and imported to be common function file to be called by test files"""
 
 
 def base_available(url):
@@ -263,25 +261,20 @@ def base_available(url):
     return requests.get(url).status_code
 
 
-"""Look into helper functions for the request to build parameters and headers
-find places to refactor code to make simpler and look into ares where functions can be built if there is functionality
-that is repeated or can be repeated"""
-
-
 def post_request(url, query, **args):
     return requests.post(url + query, **args)
 
 
-def patch_request(url, query, json=None, params=None, headers=None):
-    return requests.patch(url + query, json=None, params=None, headers=None)
+def patch_request(url, query, *args):
+    return requests.patch(url + query, *args)
 
 
-def put_request(url, query, json=None, params=None, headers=None):
-    return requests.put(url + query, json=None, params=None, headers=None)
+def put_request(url, query, *args):
+    return requests.put(url + query, *args)
 
 
-def delete_request(url, query, json=None, params=None, headers=None):
-    return requests.delete(url + query, json=None, params=None, headers=None)
+def delete_request(url, query):
+    return requests.delete(url + query)
 
 
 def get_request(url, query, parameters_to_send=None, **headers_to_send):
