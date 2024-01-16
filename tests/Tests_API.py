@@ -1,7 +1,8 @@
-import requests
-import pytest
-import random
 import datetime
+import random
+
+import pytest
+import requests
 
 """we can move all the variables to a common file for ease of modification when needed"""
 
@@ -24,7 +25,7 @@ class TestClass:
         if server_status == 200:
             num_pages = get_request(base_url, get_users_request)
             pages = num_pages.json()["total_pages"]
-            page = make_dict_objects(page="2")
+            page = make_dict_objects(page=pages)
             response = get_request(base_url, get_users_request, page)
             assert response.status_code == 200
         else:
@@ -44,9 +45,9 @@ class TestClass:
 
     @pytest.mark.unit
     def test_get_single_user_status_code(self):
-        """Tests the status code of the get single user API
-        gets the total number of users and uses a list comprehension to create a list of user numbers and randomly picks one to send as a parameter
-        this ensures that it will always pick a valid user number"""
+        """Tests the status code of the get single user API gets the total number of users and uses a list
+        comprehension to create a list of user numbers and randomly picks one to send as a parameter this ensures
+        that it will always pick a valid user number"""
         server_status = base_available(base_url)
         if server_status == 200:
             num_users = get_request(base_url, get_users_request)
@@ -93,7 +94,7 @@ class TestClass:
             first_name = make_user_first_name()
             job = get_job()
             body = make_dict_objects(name=first_name, job=job)
-            response = requests.post(base_url + post_create, json=body)
+            response = post_request(base_url, post_create, json=body)
             assert response.status_code == 201
         else:
             assert 200 == server_status, "exit test, server not available!"
@@ -108,9 +109,10 @@ class TestClass:
             user_job = get_job()
             create_body = make_dict_objects(name=user_first_name, job=user_job)
             new_job = get_job(user_job)
-            create_response = requests.post(base_url + post_create, json=create_body)
+            create_new_body = make_dict_objects(name=user_first_name, job=new_job)
+            create_response = post_request(base_url, post_create, json=create_body)
             user_id = create_response.json()["id"]
-            update_response = requests.put(f"{base_url}{post_create}/{user_id}")
+            update_response = put_request(base_url, f"{post_create}/{user_id}", json=create_new_body)
             assert update_response.status_code == 200
         else:
             assert 200 == server_status, "exit test, server not available!"
@@ -125,9 +127,10 @@ class TestClass:
             user_job = get_job()
             create_body = make_dict_objects(name=user_first_name, job=user_job)
             new_job = get_job(user_job)
-            create_response = requests.post(base_url + post_create, json=create_body)
+            create_new_body = make_dict_objects(name=user_first_name, job=new_job)
+            create_response = post_request(base_url, post_create, json=create_body)
             user_id = create_response.json()["id"]
-            update_response = requests.patch(f"{base_url}{post_create}/{user_id}")
+            update_response = patch_request(base_url, f"{post_create}/{user_id}", json=create_new_body)
             assert update_response.status_code == 200
         else:
             assert 200 == server_status, "exit test, server not available!"
@@ -141,9 +144,9 @@ class TestClass:
             first_name = make_user_first_name()
             job = get_job()
             body = make_dict_objects(name=first_name, job=job)
-            response = requests.post(base_url + post_create, json=body)
+            response = post_request(base_url, post_create, json=body)
             user_id = response.json()["id"]
-            delete_response = requests.delete(f"{base_url}{post_create}/{user_id}")
+            delete_response = delete_request(base_url, f"{post_create}/{user_id}")
             assert delete_response.status_code == 204
         else:
             assert 200 == server_status, "exit test, server not available!"
@@ -161,7 +164,8 @@ class TestClass:
             email_address = response.json()["data"]["email"]
             register_password = create_password()
             body = make_dict_objects(email=email_address, password=register_password)
-            register_response = requests.post(base_url + post_register, json=body)
+            register_response = post_request(base_url, post_login,
+                                             json=body)  # requests.post(base_url + post_login, json=body)
             assert register_response.status_code == 200
         else:
             assert 200 == server_status, "exit test, server not available!"
@@ -179,7 +183,7 @@ class TestClass:
             email_address = response.json()["data"]["email"]
             register_password = create_password()
             body = make_dict_objects(email=email_address, password=register_password)
-            register_response = requests.post(base_url + post_login, json=body)
+            register_response = post_request(base_url, post_login, json=body)
             assert register_response.status_code == 200
         else:
             assert 200 == server_status, "exit test, server not available!"
@@ -187,8 +191,8 @@ class TestClass:
 
     @pytest.mark.unit
     def test_single_user_not_found(self):
-        """Tests the status code of the single user not found API
-        gets the total number of users and selects the total + 1 to ensure that it always picks an invalid user number"""
+        """Tests the status code of the single user not found API gets the total number of users and selects the
+        total + 1 to ensure that it always picks an invalid user number"""
         server_status = base_available(base_url)
         if server_status == 200:
             response = get_request(base_url, get_users_request)
@@ -226,7 +230,7 @@ class TestClass:
             response = get_request(base_url, f"{get_single_user_request}/{user_number}")
             email_address = response.json()["data"]["email"]
             body = make_dict_objects(email=email_address)
-            register_response = requests.post(base_url + post_register, json=body)
+            register_response = post_request(base_url, post_register, json=body)
             assert register_response.status_code == 400
         else:
             assert 200 == server_status, "exit test, server not available!"
@@ -242,16 +246,16 @@ class TestClass:
             user_number = random.choice([x for x in range(1, total_users + 1)])
             response = get_request(base_url, f"{get_single_user_request}/{user_number}")
             email_address = response.json()["data"]["email"]
-            register_password = create_password()
             body = make_dict_objects(email=email_address)
-            register_response = requests.post(base_url + post_login, json=body)
+            register_response = post_request(base_url, post_login, json=body)
             assert register_response.status_code == 400
         else:
             assert 200 == server_status, "exit test, server not available!"
         return
 
 
-"""Some functions can be moveto a file and imported to be common function file to be called by test files - possible way to utilize fixtures"""
+"""Some functions can be moveto a file and imported to be common function file to be called by test files - possible 
+way to utilize fixtures"""
 
 
 def base_available(url):
@@ -260,8 +264,24 @@ def base_available(url):
 
 
 """Look into helper functions for the request to build parameters and headers
-find places to refactor code to make simpler and look into ares where functions can be built if there is fuctionality
+find places to refactor code to make simpler and look into ares where functions can be built if there is functionality
 that is repeated or can be repeated"""
+
+
+def post_request(url, query, **args):
+    return requests.post(url + query, **args)
+
+
+def patch_request(url, query, json=None, params=None, headers=None):
+    return requests.patch(url + query, json=None, params=None, headers=None)
+
+
+def put_request(url, query, json=None, params=None, headers=None):
+    return requests.put(url + query, json=None, params=None, headers=None)
+
+
+def delete_request(url, query, json=None, params=None, headers=None):
+    return requests.delete(url + query, json=None, params=None, headers=None)
 
 
 def get_request(url, query, parameters_to_send=None, **headers_to_send):
