@@ -23,8 +23,8 @@ class TestClass:
         server_status = base_available(base_url)
         if server_status == 200:
             num_pages = get_request(base_url, get_users_request)
-            pages = num_pages.json()["total_pages"]
-            page = make_dict_objects(page=pages)
+            # pages = return_json(num_pages, ["total_pages"])
+            page = make_dict_objects(page=return_json(num_pages, ["total_pages"])[0])
             response = get_request(base_url, get_users_request, page)
             assert response.status_code == 200
         else:
@@ -50,8 +50,8 @@ class TestClass:
         server_status = base_available(base_url)
         if server_status == 200:
             num_users = get_request(base_url, get_users_request)
-            total_users = int(num_users.json()["total"])
-            user_number = random.choice([x for x in range(1, total_users + 1)])
+            total_users = return_json(num_users,["total"])
+            user_number = random.choice([x for x in range(1, int(total_users[0]) + 1)])
             response = get_request(base_url, f"{get_single_user_request}/{user_number}")
             assert response.status_code == 200
         else:
@@ -90,10 +90,7 @@ class TestClass:
         """Tests the status code of the get create API"""
         server_status = base_available(base_url)
         if server_status == 200:
-            first_name = make_user_first_name()
-            job = get_job()
-            body = make_dict_objects(name=first_name, job=job)
-            response = post_request(base_url, post_create, json=body)
+            response = post_request(base_url, post_create, json=make_dict_objects(name=make_user_first_name(), job=get_job()))
             assert response.status_code == 201
         else:
             assert 200 == server_status, "exit test, server not available!"
@@ -122,13 +119,11 @@ class TestClass:
         """Tests the status code of the update API"""
         server_status = base_available(base_url)
         if server_status == 200:
-            user_first_name = make_user_first_name()
-            user_job = get_job()
-            create_body = make_dict_objects(name=user_first_name, job=user_job)
-            new_job = get_job(user_job)
-            create_new_body = make_dict_objects(name=user_first_name, job=new_job)
+            create_body = make_dict_objects(name=make_user_first_name(), job=get_job())
+            new_job = get_job(get_job(create_body["job"]))
+            create_new_body = make_dict_objects(name=create_body["name"], job=new_job)
             create_response = post_request(base_url, post_create, json=create_body)
-            user_id = create_response.json()["id"]
+            user_id = return_json(create_response,["id"])
             update_response = patch_request(base_url, f"{post_create}/{user_id}", json=create_new_body)
             assert update_response.status_code == 200
         else:
@@ -140,10 +135,7 @@ class TestClass:
         """Tests the status code of the get create API"""
         server_status = base_available(base_url)
         if server_status == 200:
-            first_name = make_user_first_name()
-            job = get_job()
-            body = make_dict_objects(name=first_name, job=job)
-            response = post_request(base_url, post_create, json=body)
+            response = post_request(base_url, post_create, json=make_dict_objects(name=make_user_first_name(), job=get_job()))
             user_id = response.json()["id"]
             delete_response = delete_request(base_url, f"{post_create}/{user_id}")
             assert delete_response.status_code == 204
@@ -157,14 +149,12 @@ class TestClass:
         server_status = base_available(base_url)
         if server_status == 200:
             num_users = get_request(base_url, get_users_request)
-            total_users = int(num_users.json()["total"])
-            user_number = random.choice([x for x in range(1, total_users + 1)])
+            total_users = return_json(num_users, ["total"])
+            user_number = random.choice([x for x in range(1, int(total_users[0]) + 1)])
             response = get_request(base_url, f"{get_single_user_request}/{user_number}")
-            email_address = response.json()["data"]["email"]
-            register_password = create_password()
-            body = make_dict_objects(email=email_address, password=register_password)
+            body = make_dict_objects(email=return_json(response,["email"])[0], password=create_password())
             register_response = post_request(base_url, post_login,
-                                             json=body)  # requests.post(base_url + post_login, json=body)
+                                             json=body)
             assert register_response.status_code == 200
         else:
             assert 200 == server_status, "exit test, server not available!"
@@ -176,12 +166,10 @@ class TestClass:
         server_status = base_available(base_url)
         if server_status == 200:
             num_users = get_request(base_url, get_users_request)
-            total_users = int(num_users.json()["total"])
-            user_number = random.choice([x for x in range(1, total_users + 1)])
+            total_users = return_json(num_users, ["total"])
+            user_number = random.choice([x for x in range(1, total_users[0] + 1)])
             response = get_request(base_url, f"{get_single_user_request}/{user_number}")
-            email_address = response.json()["data"]["email"]
-            register_password = create_password()
-            body = make_dict_objects(email=email_address, password=register_password)
+            body = make_dict_objects(email=return_json(response,["email"])[0], password=create_password())
             register_response = post_request(base_url, post_login, json=body)
             assert register_response.status_code == 200
         else:
@@ -196,7 +184,7 @@ class TestClass:
         if server_status == 200:
             response = get_request(base_url, get_users_request)
             json_content = response.json()
-            invalid_user = int(json_content["total"]) + 1
+            invalid_user = return_json(response, ["total"])
             invalid_response = get_request(base_url, get_single_user_request + f"/{str(invalid_user)}")
             assert invalid_response.status_code == 404
         else:
@@ -211,8 +199,8 @@ class TestClass:
         server_status = base_available(base_url)
         if server_status == 200:
             response = get_request(base_url, get_list_resources)
-            json_content = response.json()
-            invalid_resource = int(json_content["total"]) + 1
+            json_content = return_json(response, ["total"])
+            invalid_resource = int(json_content[0]) + 1
             invalid_response = get_request(base_url, get_single_resource + f"/{str(invalid_resource)}")
             assert invalid_response.status_code == 404
         else:
@@ -227,8 +215,7 @@ class TestClass:
             total_users = int(num_users.json()["total"])
             user_number = random.choice([x for x in range(1, total_users + 1)])
             response = get_request(base_url, f"{get_single_user_request}/{user_number}")
-            email_address = response.json()["data"]["email"]
-            body = make_dict_objects(email=email_address)
+            body = make_dict_objects(email=return_json(response, ["email"])[0])
             register_response = post_request(base_url, post_register, json=body)
             assert register_response.status_code == 400
         else:
@@ -241,11 +228,10 @@ class TestClass:
         server_status = base_available(base_url)
         if server_status == 200:
             num_users = get_request(base_url, get_users_request)
-            total_users = int(num_users.json()["total"])
-            user_number = random.choice([x for x in range(1, total_users + 1)])
+            total_users = return_json(num_users, ["total"])
+            user_number = random.choice([x for x in range(1, int(total_users[0]) + 1)])
             response = get_request(base_url, f"{get_single_user_request}/{user_number}")
-            email_address = response.json()["data"]["email"]
-            body = make_dict_objects(email=email_address)
+            body = make_dict_objects(email=return_json(response, ["email"])[0])
             register_response = post_request(base_url, post_login, json=body)
             assert register_response.status_code == 400
         else:
@@ -260,17 +246,32 @@ def base_available(url):
     """function to return the base url status code to be able to verify the base is available"""
     return requests.get(url).status_code
 
+"""functions related to the requests module"""
+
+def return_json(request_response, json_location):
+    json_return = []
+    new_json = request_response.json()
+    for field in json_location:
+        if field in new_json.keys():
+            json_return.append(new_json[field])
+        for item in new_json.items():
+            for i in range(0, len(item)):
+                if type(item[i]) is dict:
+                    if field in item[i].keys():
+                        json_return.append(item[i][field])
+    return json_return
+
 
 def post_request(url, query, **args):
     return requests.post(url + query, **args)
 
 
-def patch_request(url, query, *args):
-    return requests.patch(url + query, *args)
+def patch_request(url, query, **args):
+    return requests.patch(url + query, **args)
 
 
-def put_request(url, query, *args):
-    return requests.put(url + query, *args)
+def put_request(url, query, **args):
+    return requests.put(url + query, **args)
 
 
 def delete_request(url, query):
@@ -282,7 +283,7 @@ def get_request(url, query, parameters_to_send=None, **headers_to_send):
     combined_url = f"{url}{query}"
     return requests.get(combined_url, params=parameters_to_send, headers=headers_to_send)
 
-
+"""functions related to working with test data"""
 def make_user_first_name():
     """uses epoch timestamp based on date a time now to create a unique first name"""
     unique_timestamp = int(datetime.datetime.now().timestamp())
