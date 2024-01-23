@@ -1,6 +1,5 @@
 import requests
 
-
 def post_request(url, query, **args):
     """function adds a wrapper to the post request from the requests module, enter the base url the """
     return requests.post(url + query, **args)

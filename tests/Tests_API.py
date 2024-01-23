@@ -9,7 +9,7 @@ from utilities.utility_functions import make_dict_objects, make_user_first_name,
 
 
 class TestClass:
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_list_users_status_code(self):
         """Tests the status code of the get pages API
         gets the total number of pages and uses the last page to ensure it picks a valid page to send as a parameter"""
@@ -42,7 +42,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_get_users_status_code(self):
         """Tests the status code of the get single user API"""
         server_status = base_available(RequestData.base_url)
@@ -53,7 +53,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_get_single_user_status_code(self):
         """Tests the status code of the get single user API gets the total number of users and uses a list
         comprehension to create a list of user numbers and randomly picks one to send as a parameter this ensures
@@ -69,7 +69,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_get_list_resources_status_code(self):
         """Tests the status code of the get single user API"""
         server_status = base_available(RequestData.base_url)
@@ -80,7 +80,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_get_single_resource_status_code(self):
         """Tests the status code of the get single user API
         gets the total number of resources and uses a list comprehension to create a list of user numbers and randomly
@@ -96,7 +96,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_create_status_code(self):
         """Tests the status code of the get create API"""
         server_status = base_available(RequestData.base_url)
@@ -108,7 +108,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_update_status_code(self):
         """Tests the status code of the update API"""
         server_status = base_available(RequestData.base_url)
@@ -126,7 +126,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_update_patch_status_code(self):
         """Tests the status code of the update API"""
         server_status = base_available(RequestData.base_url)
@@ -142,7 +142,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_delete_status_code(self):
         """Tests the status code of the get create API"""
         server_status = base_available(RequestData.base_url)
@@ -156,7 +156,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_register_status_code(self):
         """Tests the status code of the post  register API"""
         server_status = base_available(RequestData.base_url)
@@ -173,7 +173,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
         return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_login_successful_status_code(self):
         """Tests the status code of the post  login API"""
         server_status = base_available(RequestData.base_url)
@@ -190,7 +190,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
         return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_single_user_not_found(self):
         """Tests the status code of the single user not found API gets the total number of users and selects the
         total + 1 to ensure that it always picks an invalid user number"""
@@ -204,7 +204,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
             return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_single_resource_not_found(self):
         """Tests the status code of the single user not found API
         gets the total number of resources and selects the total + 1 to ensure that it always picks an invalid
@@ -235,7 +235,7 @@ class TestClass:
             assert 200 == server_status, "exit test, server not available!"
         return
 
-    @pytest.mark.unit
+    @pytest.mark.acceptance
     def test_login_unsuccessful_status_code(self):
         """Tests the status code of the post  login API"""
         server_status = base_available(RequestData.base_url)
