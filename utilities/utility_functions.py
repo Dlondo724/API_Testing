@@ -2,19 +2,19 @@ import random
 import datetime
 
 
-def make_user_first_name():
+def make_user_first_name() -> str:
     """uses epoch timestamp based on date a time now to create a unique first name"""
     unique_timestamp = int(datetime.datetime.now().timestamp())
     return f"First{str(unique_timestamp)}"
 
 
-def make_user_last_name():
+def make_user_last_name() -> str:
     """uses epoch timestamp based on date a time now to create a unique last name"""
     unique_timestamp = int(datetime.datetime.now().timestamp())
     return f"Last{str(unique_timestamp)}"
 
 
-def make_dict_objects(**dict_obs):
+def make_dict_objects(**dict_obs) -> dict:
     """creates dictionary key value pairs for payloads, parameters, headers, etc."""
     new_dictionary = {}
     for arg in dict_obs.items():
@@ -23,7 +23,7 @@ def make_dict_objects(**dict_obs):
     return new_dictionary
 
 
-def get_job(current_job=None):
+def get_job(current_job=None) -> str:
     """passing in a current job will exclude it from being selected again during the same test"""
     jobs = ["Software Engineer", "Quality Assurance Technician", "DevOps", "Business Analyst"]
     used_job = []
@@ -34,12 +34,12 @@ def get_job(current_job=None):
         return random.choice(remaining_jobs)
 
 
-def create_email(first, last):
+def create_email(first, last) -> str:
     email_domain = random.choice(["gmail.com", "comcast.net", "aol.com", "yahoo.com", "work.com"])
     return f"{first}.{last}@{email_domain}"
 
 
-def create_password():
+def create_password() -> str:
     pass_word = []
     number_of_symbols = 2
     number_of_numbers = 3

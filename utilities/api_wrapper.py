@@ -1,16 +1,17 @@
 import requests
 
-def post_request(url, query, **args):
+
+def post_request(url, query, **kwargs):
     """function adds a wrapper to the post request from the requests module, enter the base url the """
-    return requests.post(url + query, **args)
+    return requests.post(url + query, **kwargs)
 
 
-def patch_request(url, query, **args):
-    return requests.patch(url + query, **args)
+def patch_request(url, query, **kwargs):
+    return requests.patch(url + query, **kwargs)
 
 
-def put_request(url, query, **args):
-    return requests.put(url + query, **args)
+def put_request(url, query, **kwargs):
+    return requests.put(url + query, **kwargs)
 
 
 def delete_request(url, query):
@@ -23,7 +24,7 @@ def get_request(url, query, parameters_to_send=None, **headers_to_send):
     return requests.get(combined_url, params=parameters_to_send, headers=headers_to_send)
 
 
-def return_json(request_response, json_location):
+def return_json(request_response, json_location) -> list:
     """function returns a list of items from the specified keys in the json_location that are contained in the
     request response"""
     json_return = []
